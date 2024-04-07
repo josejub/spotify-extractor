@@ -1,0 +1,8 @@
+pandas==2.1.1
+spotipy==2.23.0
+lyricsgenius==3.0.1
+python-dotenv==1.0.1
+requests < 2.29.0
+docker==7.0.0
+yt-dlp==2024.3.10
+s3fs==2024.3.1

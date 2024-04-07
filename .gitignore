@@ -1,0 +1,11 @@
+.vscode/
+**/__pycache__/
+**/airflow/logs/*/
+**/postgres/*/
+**/postgres/*.conf
+**/postgres/*.opts
+**/postgres/PG_VERSION
+**/postgres/postmaster.pid
+**/minio/*/
+**/.env
+temp/**/

@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    env_file:
+      - ./services/envs/postgres.env
+    volumes:
+      - ./services/postgres:/var/lib/postgresql/data
+    networks:
+      - extractor_net
+  
+  airflow:
+    container_name: airflow
+    # build: 
+    #   dockerfile: ./services/airflow/Dockerfile_airflow
+    image: apache/airflow:2.6.0-python3.9
+    depends_on: 
+      - postgres
+    ports:
+      - "2040:2040"
+    volumes:
+      - ./services/airflow:/opt/airflow
+      - temp:/temp
+      - code:/code
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: ./services/envs/airflow.env
+    command:
+      - bash
+      - -c
+      - |
+        pip install -r requirements.txt
+        airflow db init;
+        airflow users create --username user --firstname user --lastname user --role Admin --email admin@example.com --password admin;
+        airflow db upgrade;
+        airflow webserver -p 2040 > /dev/null 2>&1 &
+        airflow scheduler;
+    networks:
+      - extractor_net
+  
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - ./services/minio:/mnt/data
+      - ./services/envs/minio.env:/etc/config.env
+    environment:
+      - MINIO_CONFIG_ENV_FILE=/etc/config.env
+    command: minio server --console-address ":9001" &
+      mc alias set myminio https://minio:9000 minioadmin minioadmin; &
+      mc mb myminio/spotify-extractor;
+    networks:
+      - extractor_net
+
+  
+volumes:
+  temp:
+    name: "temp"
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./temp
+  code:
+    name: "code"
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./code
+
+networks:
+  extractor_net:
+    name: "extractor_net"
+    ipam:
+      config:
+        - subnet: 137.129.10.0/24
