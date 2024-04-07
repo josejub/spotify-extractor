@@ -68,9 +68,11 @@ docker compose up -d
 5. Trigger DAG run from airflow dashboard logging in http://localhost:2040
 
 6. Wait for the DAG to finish and see the files in the Minio dashboard, in http://localhost:9001
+# Acknowledgements
+Thanks to JesusdelCas99 for the docker configuration of airflow and Masterolic for the code for downloading from youtube.
 
 # Considerations when working with this project
-If you modify code in /code folder, make sure to run docker compose down -v to remove volumes, so canges are loaded correctly.
+If you modify code in /code folder, make sure to run docker compose down -v to remove volumes, so changes are loaded correctly.
 
 # Disclaimer
 This project if for demonstrating purposes only. 
