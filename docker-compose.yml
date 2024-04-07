@@ -12,8 +12,6 @@ services:
   
   airflow:
     container_name: airflow
-    # build: 
-    #   dockerfile: ./services/airflow/Dockerfile_airflow
     image: apache/airflow:2.6.0-python3.9
     depends_on: 
       - postgres
