@@ -12,7 +12,7 @@ services:
   
   airflow:
     container_name: airflow
-    image: apache/airflow:2.6.0-python3.9
+    image: apache/airflow:latest-python3.11
     depends_on: 
       - postgres
     ports:
@@ -26,7 +26,6 @@ services:
       - bash
       - -c
       - |
-        pip install -r requirements.txt
         airflow db init;
         airflow users create --username user --firstname user --lastname user --role Admin --email admin@example.com --password admin;
         airflow db upgrade;

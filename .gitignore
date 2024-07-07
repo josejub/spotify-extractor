@@ -9,3 +9,4 @@
 **/minio/*/
 **/.env
 temp/**/
+**/dev.ipynb
