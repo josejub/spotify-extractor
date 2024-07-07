@@ -22,9 +22,11 @@ default_args = {
 }
 logger = logging.Logger("extract_spotify")
 playlists = [
-            "https://open.spotify.com/playlist/0c3djV2XAgsWOm5KOHIZ6A?si=6f034a2e03494372",
-            "https://open.spotify.com/playlist/37i9dQZF1DWXYWuNDAdJsw?si=83de61e9d5884a17",
-            "https://open.spotify.com/playlist/7ttWqgppJ9J4rGjSsJRHu1"
+            # "https://open.spotify.com/playlist/0c3djV2XAgsWOm5KOHIZ6A?si=6f034a2e03494372",
+            # "https://open.spotify.com/playlist/37i9dQZF1DWXYWuNDAdJsw?si=83de61e9d5884a17",
+            # "https://open.spotify.com/playlist/7ttWqgppJ9J4rGjSsJRHu1"
+            "https://open.spotify.com/playlist/4qiSIwTZAqZB07czaJxi0p?si=23d91893e4c44b8a",
+
             ]
 
 with DAG(
@@ -52,23 +54,23 @@ with DAG(
         # For each playlist define the docker task to extract audio info and audio files
         lyrics_extractor = DockerOperator(task_id=f"lyrics_extractor_{i}",
                                     image = f"spotify_extractor", 
-                                    command=f"python /code/extract_lyrics.py -playlists {playlist} -output {mid_csv_path}", 
+                                    command=f"python /code/extract_lyrics.py -playlists {playlist} -chunk_size 1 -download_dir {temp}/{run_id}/mp3 -run_id {run_id} -output {mid_csv_path}", 
                                     mounts=mounts,
                                     auto_remove=True
                                     )
-        audio_extractor = DockerOperator(task_id=f"audio_extractor_{i}",
-                                    image = f"spotify_extractor", 
-                                    command=f"python /code/extract_audio.py -csv_song_path {mid_csv_path} -download_directory {temp}/{run_id}/mp3", 
-                                    mounts=mounts,
-                                    auto_remove=True
-                                    )
+        # audio_extractor = DockerOperator(task_id=f"audio_extractor_{i}",
+        #                             image = f"spotify_extractor", 
+        #                             command=f"python /code/extract_audio.py -csv_song_path {mid_csv_path} -download_directory ", 
+        #                             mounts=mounts,
+        #                             auto_remove=True
+        #                             )
         # STEP 1: Create temp directories to hold files until they are loaded into s3
         # STEP 2: Extract lyrics and audio metrics for the playlist        
         setup.set_downstream(lyrics_extractor)
         # STEP 3: Extract audio files for the playlist
-        lyrics_extractor.set_downstream(audio_extractor)
+        # lyrics_extractor.set_downstream(audio_extractor)
         # STEP 4: join lyrics and audio metrics extracted in step 2 to produce a single csv per run
-        audio_extractor.set_downstream(join)
+        lyrics_extractor.set_downstream(join)
     
     # Define task to load temp run folder to s3
     load_to_s3 = DockerOperator(task_id=f"load_to_s3",
