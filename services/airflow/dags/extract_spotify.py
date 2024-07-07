@@ -22,10 +22,10 @@ default_args = {
 }
 logger = logging.Logger("extract_spotify")
 playlists = [
-            # "https://open.spotify.com/playlist/0c3djV2XAgsWOm5KOHIZ6A?si=6f034a2e03494372",
-            # "https://open.spotify.com/playlist/37i9dQZF1DWXYWuNDAdJsw?si=83de61e9d5884a17",
-            # "https://open.spotify.com/playlist/7ttWqgppJ9J4rGjSsJRHu1"
-            "https://open.spotify.com/playlist/4qiSIwTZAqZB07czaJxi0p?si=23d91893e4c44b8a",
+            "https://open.spotify.com/playlist/0c3djV2XAgsWOm5KOHIZ6A?si=6f034a2e03494372",
+            "https://open.spotify.com/playlist/37i9dQZF1DWXYWuNDAdJsw?si=83de61e9d5884a17",
+            "https://open.spotify.com/playlist/7ttWqgppJ9J4rGjSsJRHu1"
+            # "https://open.spotify.com/playlist/4qiSIwTZAqZB07czaJxi0p?si=23d91893e4c44b8a",
 
             ]
 
@@ -39,7 +39,10 @@ with DAG(
     # Create default mount to be used in all containers. It is easier than bind mounts, as task 
     # containers are launched in the host machine instead of the airflow container.
     temp = f"/temp"
-    mounts = [Mount(source="temp", target="/temp"), Mount(source="code", target="/code")]
+    mounts = [
+        Mount(source="temp", target="/temp"), 
+            #   Mount(source="code", target="/code")
+              ]
     
     # Define playlist independent tasks
     setup = BashOperator(task_id = "setup", bash_command=f"mkdir -p {temp}/{run_id}/csv; mkdir -p {temp}/{run_id}/mp3")

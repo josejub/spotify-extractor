@@ -143,8 +143,11 @@ class SpotifyExtractor:
                 print(f"Error extrayendo audio: {e}")
 
     def format_s3_path(self, local_path, run_id):
-        file_name = re.split(r"/|\\", local_path)[-1]
-        return os.getenv("S3_BUCKET") + f"{run_id}/mp3/{file_name}"
+        if local_path:
+            file_name = re.split(r"/|\\", local_path)[-1]
+            return os.getenv("S3_BUCKET") + f"{run_id}/mp3/{file_name}"
+        else:
+            return ""
     
     def extract_song(self, track, download_dir, run_id):
         ids = []
